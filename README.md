@@ -1,23 +1,23 @@
-# Scraping HTML Tables with Python
+# PythonでHTMLテーブルをスクレイピングする方法
 
-[![Promo](https://github.com/luminati-io/LinkedIn-Scraper/raw/main/Proxies%20and%20scrapers%20GitHub%20bonus%20banner.png)](https://brightdata.com/) 
+[![Promo](https://github.com/luminati-io/LinkedIn-Scraper/raw/main/Proxies%20and%20scrapers%20GitHub%20bonus%20banner.png)](https://brightdata.jp/) 
 
-This guide explains how to scrape HTML tables using Python with Beautiful Soup, pandas, and Requests.
+このガイドでは、Beautiful Soup、pandas、Requests を使用して、PythonでHTMLテーブルをスクレイピングする方法を説明します。
 
-- [Prerequisites](#prerequisites)
-- [Understanding the Web Page Structure](#understanding-the-web-page-structure)
-- [Sending an HTTP Request to Access the Web Page](#sending-an-http-request-to-access-the-web-page)
-- [Parsing the HTML Using Beautiful Soup](#parsing-the-html-using-beautiful-soup)
-- [Cleaning and Structuring the Data](#cleaning-and-structuring-the-data)
-- [Exporting Cleaned Data to CSV](#exporting-cleaned-data-to-csv)
+- [前提条件](#prerequisites)
+- [Webページ構造の理解](#understanding-the-web-page-structure)
+- [HTTPリクエストを送信してWebページにアクセスする](#sending-an-http-request-to-access-the-web-page)
+- [Beautiful Soupを使用してHTMLを解析する](#parsing-the-html-using-beautiful-soup)
+- [データのクリーニングと構造化](#cleaning-and-structuring-the-data)
+- [クリーニング済みデータをCSVにエクスポートする](#exporting-cleaned-data-to-csv)
 
 ## Prerequisites
 
-Ensure that you have Python 3.8 or newer installed, create a [virtual environment](https://docs.python.org/3/library/venv.html), and install the following Python packages:
+Python 3.8 以降がインストールされていることを確認し、[virtual environment](https://docs.python.org/3/library/venv.html) を作成して、以下のPythonパッケージをインストールしてください。
 
-- **[Requests](https://requests.readthedocs.io/en/latest/)**: A library for sending HTTP requests to interact with web services and APIs, enabling data retrieval and submission.
-- **[Beautiful Soup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/)**: A tool for parsing HTML documents, allowing structured navigation, searching, and data extraction from web pages.
-- **[pandas](https://pandas.pydata.org/)**: A library for analyzing, cleaning, and organizing scraped data, with support for exporting it to formats like CSV or XLSX.
+- **[Requests](https://requests.readthedocs.io/en/latest/)**: HTTPリクエストを送信してWebサービスやAPIとやり取りし、データの取得や送信を可能にするライブラリです。
+- **[Beautiful Soup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/)**: HTMLドキュメントを解析するためのツールで、構造化されたナビゲーション、検索、およびWebページからのデータ抽出が可能です。
+- **[pandas](https://pandas.pydata.org/)**: スクレイピングしたデータの分析、クリーニング、整理のためのライブラリで、CSVやXLSXなどの形式へのエクスポートをサポートします。
 
 ```bash
 pip install requests beautifulsoup4 pandas
@@ -25,23 +25,23 @@ pip install requests beautifulsoup4 pandas
 
 ## Understanding the Web Page Structure
 
-In this tutorial, you'll scrape data from the [Worldometer website](https://www.worldometers.info/world-population/population-by-country/), which features up-to-date country population figures for 2024.
+このチュートリアルでは、2024年の最新の国別人口データが掲載されている [Worldometer website](https://www.worldometers.info/world-population/population-by-country/) からデータをスクレイピングします。
 
 ![HTML table on the web page](https://github.com/luminati-io/scrape-html-tables-python/blob/main/images/image-71-2048x1341.png)
 
-To inspect the HTML table, right-click on it and select **Inspect**. This opens the Developer Tools panel, highlighting the corresponding HTML code:
+HTMLテーブルを確認するには、テーブルを右クリックして **Inspect** を選択します。これによりDeveloper Toolsパネルが開き、該当するHTMLコードがハイライト表示されます。
 
 ![Inspect element with selected element highlighted](https://github.com/luminati-io/scrape-html-tables-python/blob/main/images/image-72-2048x1152.png)
 
-The table structure begins with a `<table>` tag (ID `example2`), contains header cells defined by `<th>` tags, and rows defined by `<tr>` tags. Within each row, `<td>` tags create individual cells that hold the data.
+テーブル構造は `<table>` タグ（ID `example2`）から始まり、`<th>` タグで定義されたヘッダーセルと、`<tr>` タグで定義された行で構成されています。各行の中では、`<td>` タグが個々のセルを作成し、データを保持します。
 
 > **Note:**
 >
-> Before scraping, review and comply with the website’s privacy policy and terms of service to ensure you adhere to all data usage and automated access restrictions.
+> スクレイピングの前に、Webサイトのプライバシーポリシーおよび利用規約を確認し、データ利用と自動アクセスに関する制限をすべて遵守していることを確認してください。
 
 ## Sending an HTTP Request to Access the Web Page
 
-To send an HTTP request and access the web page, create a Python file (_eg_ `html_table_scraper.py`) and import the `requests`, `BeautifulSoup`, and `pandas` packages:
+HTTPリクエストを送信してWebページにアクセスするには、Pythonファイル（_eg_ `html_table_scraper.py`）を作成し、`requests`、`BeautifulSoup`、`pandas` パッケージをインポートします。
 
 ```python
 # import packages
@@ -50,14 +50,14 @@ from bs4 import BeautifulSoup
 import pandas as pd
 ```
 
-Then, define the URL of the web page you want to scrape and send a GET request to that web page using `https://www.worldometers.info/world-population/population-by-country/`:
+次に、スクレイピング対象のWebページURLを定義し、`https://www.worldometers.info/world-population/population-by-country/` に対してGETリクエストを送信します。
 
 ```python
 # Send a request to the website to get the page content
 url = 'https://www.worldometers.info/world-population/population-by-country/'
 ```
 
-Send a request using the `get()` method from Requests to check whether the response is successful:
+Requests の `get()` メソッドを使用してリクエストを送信し、レスポンスが成功しているかを確認します。
 
 ```python
 # Get the content of the URL
@@ -70,37 +70,37 @@ else:
     print(f"Error: {response.status_code} - {response.text}")
 ```
 
-This code sends a GET request to a specified URL and then checks the status of the response. A `200` response indicates the request was successful.
+このコードは指定したURLにGETリクエストを送信し、その後レスポンスのステータスを確認します。`200` のレスポンスは、リクエストが成功したことを示します。
 
-Run the Python script:
+Pythonスクリプトを実行してください。
 
 ```bash
 python html_table_scraper.py
 ```
 
-Your output should look like this:
+出力は次のようになります。
 
 ```
 Request was successful!
 ```
 
-Since the GET request is successful, you now have the HTML content of the entire web page, including the HTML table.
+GETリクエストが成功したため、HTMLテーブルを含むWebページ全体のHTMLコンテンツが取得できました。
 
 ## Parsing the HTML Using Beautiful Soup
 
-Beautiful Soup is built to handle messy or broken HTML, a common issue when scraping web pages. It allows you to:
-- Parse HTML to locate the population data table.
-- Extract table headers.
-- Collect data from each table row.
+Beautiful Soupは、Webスクレイピングでよくある乱れたHTMLや壊れたHTMLを扱えるように作られています。これにより、以下が可能になります。
+- HTMLを解析して人口データのテーブルを特定する
+- テーブルヘッダーを抽出する
+- 各テーブル行からデータを収集する
 
-To begin parsing, create a Beautiful Soup object:
+解析を開始するために、Beautiful Soupオブジェクトを作成します。
 
 ```python
 # Parse the HTML content using BeautifulSoup
 soup = BeautifulSoup(response.content, 'html.parser')
 ```
 
-Next, locate the table element in the HTML with the `id` attribute `"example2"`. This table contains the population of countries in 2024:
+次に、`id` 属性が `"example2"` のHTML内のtable要素を特定します。このテーブルには2024年の国別人口が含まれています。
 
 ```python
 # Find the table containing population data
@@ -109,7 +109,7 @@ table = soup.find('table', attrs={'id': 'example2'})
 
 ### Collecting Table Headers
 
-The table has a header located in the `<thead>` and `<th>` HTML tags. Use the `find()` method from the Beautiful Soup package to extract the data in the `<thead>` tag and the `find_all()` method to collect all the headers:
+テーブルには `<thead>` および `<th>` HTMLタグ内にヘッダーがあります。Beautiful Soupパッケージの `find()` メソッドを使用して `<thead>` タグ内のデータを抽出し、`find_all()` メソッドで全ヘッダーを収集します。
 
 ```python
 # Collect the headers from the table
@@ -123,18 +123,18 @@ for th in header_row:
     headers.append(th.text.strip())
 ```
 
-This code creates an empty Python list called `headers`, locates the `<thead>` HTML tag to find all headers within `<th>` HTML tags, and then appends each collected header to the `headers` list.
+このコードは `headers` という空のPythonリストを作成し、`<thead>` HTMLタグを特定して `<th>` HTMLタグ内の全ヘッダーを見つけ、収集した各ヘッダーを `headers` リストに追加します。
 
 ### Collecting Table Row Data
 
-To collect the data in each row, create an empty Python list called `data` to store the scraped data:
+各行のデータを収集するために、スクレイピングしたデータを保存する空のPythonリスト `data` を作成します。
 
 ```python
 # Initialize an empty list to store our data
 data = []
 ```
 
-Then, extract the data in each row in the table using the `find_all()` method and append them to the Python list:
+次に、`find_all()` メソッドを使用してテーブル内の各行のデータを抽出し、Pythonリストに追加します。
 
 ```python
 # Loop through each row in the table (skipping the header row)
@@ -160,11 +160,11 @@ df = pd.DataFrame(data, columns=headers)
 print(df.shape)
 ```
 
-This code iterates through all `<tr>` HTML tags found within the `table`, starting from the second row (skipping the header row). For each row (`<tr>`), an empty list `row` is created to store the data from that row’s cells. Inside the row, the code finds all `<td>` HTML tags using the `find_all()` method, representing individual data cells in the row.
+このコードは `table` 内で見つかったすべての `<tr>` HTMLタグを、2行目（ヘッダー行をスキップ）から順に反復します。各行（`<tr>`）ごとに、その行のセルのデータを格納する空のリスト `row` を作成します。行の内部では、`find_all()` メソッドを使用してすべての `<td>` HTMLタグ（行内の個々のデータセル）を見つけます。
 
-For each `<td>` HTML tag, the code extracts the text content using the `.text`attribute and applies the `.strip()` method to remove any leading or trailing whitespace from the text. The cleaned cell data is appended to the `row` list. After processing all the cells in the current row, the entire row is appended to the `data` list. Finally, you convert the collected data to a pandas DataFrame with the column names defined by the `headers` list and then show the shape of the data.
+各 `<td>` HTMLタグについて、`.text` 属性でテキスト内容を抽出し、`.strip()` メソッドで前後の余分な空白を取り除きます。クリーニングされたセルデータは `row` リストに追加されます。現在の行の全セルを処理したら、行全体が `data` リストに追加されます。最後に、収集したデータを `headers` リストで定義された列名を持つpandas DataFrameに変換し、データの形状を表示します。
 
-The full Python script should look like this:
+完全なPythonスクリプトは次のようになります。
 
 ```python
 # Import packages
@@ -225,19 +225,19 @@ else:
     print(f"Error: {response.status_code} - {response.text}")
 ```
 
-Use the following command to run the Python script in your terminal:
+ターミナルで次のコマンドを使用してPythonスクリプトを実行します。
 
 ```bash
 python html_table_scraper.py
 ```
 
-Your output should look like this:
+出力は次のようになります。
 
 ```
 (234,12)
 ```
 
-Next, use the `head()` method from pandas and `print()` to view the first ten rows of the extracted data:
+次に、pandas の `head()` メソッドと `print()` を使用して、抽出したデータの先頭10行を表示します。
 
 ```python
 print(df.head(10))
@@ -247,23 +247,23 @@ print(df.head(10))
 
 ## Cleaning and Structuring the Data
 
-Cleaning scraped data from an HTML table is crucial for consistency, accuracy, and usability in analysis. Raw data may have missing values, formatting errors, unwanted characters, or incorrect data types, all of which can lead to unreliable results. Proper cleaning standardizes the dataset and aligns it with the intended structure for analysis.
+HTMLテーブルからスクレイピングしたデータのクリーニングは、分析における一貫性、正確性、そして利用しやすさのために重要です。生データには欠損値、フォーマットエラー、不要な文字、または誤ったデータ型が含まれる場合があり、これらは信頼できない結果につながる可能性があります。適切にクリーニングすることでデータセットが標準化され、分析に必要な意図した構造に整合します。
 
-In this section, the following data-cleaning tasks are performed:
+このセクションでは、次のデータクリーニング作業を行います。
 
-- Renaming column names
-- Replacing missing values presented in the row data
-- Removing commas and convert data types to the correct format
-- Removing the percentage sign (%) and convert data types to the correct format
-- Changing data types for numerical columns
+- 列名の変更
+- 行データに存在する欠損値の置換
+- カンマを削除し、データ型を正しい形式に変換
+- パーセント記号（%）を削除し、データ型を正しい形式に変換
+- 数値列のデータ型を変更
 
 ### Renaming Column Names
 
-Pandas offers the `rename()` method to update column names, making them more descriptive or easier to work with. Simply pass a dictionary to the `columns` parameter, where keys represent current names and values represent the new names. Use this method to update the following column names:
+pandas には、列名を更新してより説明的にしたり、扱いやすくしたりするための `rename()` メソッドがあります。`columns` パラメータに辞書を渡すだけで、キーが現在の名前、値が新しい名前を表します。このメソッドを使用して、次の列名を更新します。
 
-- `#` to `Rank`
-- `Yearly change` to `Yearly change %`
-- `World Share` to `World Share %`
+- `#` を `Rank` に
+- `Yearly change` を `Yearly change %` に
+- `World Share` を `World Share %` に
 
 ```python
 # Rename columns
@@ -275,15 +275,15 @@ df.rename(columns={'World Share': 'World Share %'}, inplace=True)
 print(df.head())
 ```
 
-The columns should now look like this:
+列は次のようになります。
 
 ![Column names after renaming](https://github.com/luminati-io/scrape-html-tables-python/blob/main/images/image-74-2048x371.png)
 
 ### Replacing Missing Values
 
-Missing values can skew calculations like averages or sums, leading to inaccurate insights. Remove, replace, or fill these gaps with appropriate values before performing any analysis.
+欠損値は平均や合計などの計算を歪め、不正確な洞察につながる可能性があります。分析を行う前に、これらの欠損を削除、置換、または適切な値で補完してください。
 
-The `Urban Pop %` column currently contains missing values labeled as `N.A.`. Replace `N.A.` with `0%` using the `replace()` method from pandas like this:
+`Urban Pop %` 列には現在、`N.A.` とラベル付けされた欠損値が含まれています。pandas の `replace()` メソッドを使用して `N.A.` を `0%` に置換します。
 
 ```python
 # Replace 'N.A.' with '0%' in the 'Urban Pop %' column
@@ -292,7 +292,7 @@ df['Urban Pop %'] = df['Urban Pop %'].replace('N.A.', '0%')
 
 ### Removing Percentage Signs and Convert Data Types
 
-The columns `Yearly Change %`, `Urban Pop %`, and `World Share %` contain numbers with a `%` sign (e.g., `37.0%`), which prevents direct mathematical operations like calculating averages or standard deviations. To fix this, use the `replace()` method to remove the `%` and then convert the values to `float` using `astype()`.
+`Yearly Change %`、`Urban Pop %`、`World Share %` の各列には `%` 記号付きの数値（例: `37.0%`）が含まれており、平均や標準偏差の計算などの直接的な数値演算ができません。これを修正するには、`replace()` メソッドで `%` を削除し、`astype()` を使用して値を `float` に変換します。
 
 ```python
 # Remove the '%' sign and convert to float
@@ -304,17 +304,17 @@ df['World Share %'] = df['World Share %'].replace('%', '', regex=True).astype(fl
 df.head()
 ```
 
-This code removes the `%` sign from the values in the columns `Yearly Change %`, `Urban Pop %`, and `World Share %` using the `replace()` method with a regular expression. Then, it converts the cleaned values to a `float` data type using `astype(float)`. Finally, it displays the first five rows of the DataFrame with `df.head()`.
+このコードは正規表現を用いた `replace()` メソッドで `Yearly Change %`、`Urban Pop %`、`World Share %` 列の値から `%` 記号を削除します。その後、`astype(float)` を使用してクリーニング後の値を `float` データ型に変換します。最後に、`df.head()` でDataFrameの先頭5行を表示します。
 
-Your output should look like this:
+出力は次のようになります。
 
 ![Top five rows](https://github.com/luminati-io/scrape-html-tables-python/blob/main/images/image-75-2048x371.png)
 
 ### Removing Commas and Convert Data Types
 
-Currently, the columns `Population (2024)`, `Net Change`, `Density (P/Km²)`, `Land Area (Km²)`, and `Migrants (net)` contain numerical values with commas (_eg_ 1,949,236). This makes it impossible to perform mathematical operations for analysis.
+現在、`Population (2024)`、`Net Change`、`Density (P/Km²)`、`Land Area (Km²)`、`Migrants (net)` の各列には、カンマを含む数値（_eg_ 1,949,236）が入っています。これにより、分析のための数値演算ができません。
 
-To fix this, you can apply the `replace()` and `astype()` to remove commas and convert the numbers to the integers data type:
+これを修正するには、`replace()` と `astype()` を適用してカンマを削除し、数値を整数データ型に変換します。
 
 ```python
 # Remove commas and convert to integers
@@ -334,11 +334,11 @@ for column in columns_to_convert:
     df[column] = df[column].astype(int)
 ```
 
-This code creates a list called `columns_to_convert` for the columns to process. For each column, it converts values to strings with `astype(str)`, removes commas using `str.replace(',', '')`, and then converts them to integers with `astype(int)`, preparing the data for mathematical operations.
+このコードは、処理対象の列のために `columns_to_convert` というリストを作成します。各列について、`astype(str)` で値を文字列に変換し、`str.replace(',', '')` でカンマを削除してから、`astype(int)` で整数に変換し、数値演算に適した形に整えます。
 
 ### Changing Data Types for Numerical Columns
 
-The `Rank`, `Med. Age`, and `Fert. Rate` columns are stored as objects even though they contain numbers. Convert these columns to integers or floats to enable mathematical operations:
+`Rank`、`Med. Age`、`Fert. Rate` の各列は数値を含んでいるにもかかわらずobjectとして保存されています。数値演算ができるように、これらの列を整数または浮動小数点に変換します。
 
 ```python
 # Convert to integer or float data types and integers
@@ -348,21 +348,21 @@ df['Med. Age'] = df['Med. Age'].astype(int)
 df['Fert. Rate'] = df['Fert. Rate'].astype(float)
 ```
 
-This code converts the values in the `Rank` and `Med. Age` columns into an integer data type and the values in the `Fert. Rate` into a float data type.
+このコードは、`Rank` と `Med. Age` 列の値を整数データ型に、`Fert. Rate` の値を浮動小数点（float）データ型に変換します。
 
-Finally, check to make sure the cleaned data has the correct data types using the `head()` method:
+最後に、`head()` メソッドを使用して、クリーニング済みデータが正しいデータ型になっていることを確認します。
 
 ```python
 print(df.head(10))
 ```
 
-Your output should look like this:
+出力は次のようになります。
 
 ![Top ten rows of the cleaned data](https://github.com/luminati-io/scrape-html-tables-python/blob/main/images/image-76-2048x665.png)
 
 ## Exporting Cleaned Data to CSV
 
-After cleaning your data, save it for future analysis and sharing by exporting it to a CSV file. Use pandas' `to_csv()` method to export your DataFrame to a file named `world_population_by_country.csv`:
+データをクリーニングしたら、今後の分析や共有のためにCSVファイルとして保存します。pandas の `to_csv()` メソッドを使用して、DataFrameを `world_population_by_country.csv` というファイル名でエクスポートします。
 
 ```python
 # Save the data to a file
@@ -372,6 +372,6 @@ df.to_csv(filename, index=False)
 
 ## Conclusion
 
-Extracting data from complex websites can be difficult and time-consuming. To save you time and make things easier, consider using the [Bright Data Web Scraper API](https://brightdata.com/products/web-scraper). This powerful tool offers a prebuilt scraping solution, allowing you to extract data from complex websites with minimal technical knowledge.
+複雑なWebサイトからのデータ抽出は、難しく時間がかかる場合があります。時間を節約し、作業を簡単にするために、[Bright Data Web Scraper API](https://brightdata.jp/products/web-scraper) の利用をご検討ください。この強力なツールは、事前構築されたスクレイピングソリューションを提供し、最小限の技術知識で複雑なWebサイトからデータを抽出できます。
 
-Sign up and start your free Web Scraper API trial!
+サインアップして、Web Scraper API の無料トライアルを開始してください。
