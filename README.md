@@ -1,6 +1,6 @@
 # PythonでHTMLテーブルをスクレイピングする方法
 
-[![Promo](https://github.com/luminati-io/LinkedIn-Scraper/raw/main/Proxies%20and%20scrapers%20GitHub%20bonus%20banner.png)](https://brightdata.jp/) 
+[![Promo](https://github.com/bright-jp/LinkedIn-Scraper/raw/main/Proxies%20and%20scrapers%20GitHub%20bonus%20banner.png)](https://brightdata.jp/) 
 
 このガイドでは、Beautiful Soup、pandas、Requests を使用して、PythonでHTMLテーブルをスクレイピングする方法を説明します。
 
@@ -27,11 +27,11 @@ pip install requests beautifulsoup4 pandas
 
 このチュートリアルでは、2024年の最新の国別人口データが掲載されている [Worldometer website](https://www.worldometers.info/world-population/population-by-country/) からデータをスクレイピングします。
 
-![HTML table on the web page](https://github.com/luminati-io/scrape-html-tables-python/blob/main/images/image-71-2048x1341.png)
+![HTML table on the web page](https://github.com/bright-jp/scrape-html-tables-python/blob/main/images/image-71-2048x1341.png)
 
 HTMLテーブルを確認するには、テーブルを右クリックして **Inspect** を選択します。これによりDeveloper Toolsパネルが開き、該当するHTMLコードがハイライト表示されます。
 
-![Inspect element with selected element highlighted](https://github.com/luminati-io/scrape-html-tables-python/blob/main/images/image-72-2048x1152.png)
+![Inspect element with selected element highlighted](https://github.com/bright-jp/scrape-html-tables-python/blob/main/images/image-72-2048x1152.png)
 
 テーブル構造は `<table>` タグ（ID `example2`）から始まり、`<th>` タグで定義されたヘッダーセルと、`<tr>` タグで定義された行で構成されています。各行の中では、`<td>` タグが個々のセルを作成し、データを保持します。
 
@@ -243,7 +243,7 @@ python html_table_scraper.py
 print(df.head(10))
 ```
 
-![Top ten rows from the scraped table](https://github.com/luminati-io/scrape-html-tables-python/blob/main/images/image-73-2048x665.png)
+![Top ten rows from the scraped table](https://github.com/bright-jp/scrape-html-tables-python/blob/main/images/image-73-2048x665.png)
 
 ## Cleaning and Structuring the Data
 
@@ -277,7 +277,7 @@ print(df.head())
 
 列は次のようになります。
 
-![Column names after renaming](https://github.com/luminati-io/scrape-html-tables-python/blob/main/images/image-74-2048x371.png)
+![Column names after renaming](https://github.com/bright-jp/scrape-html-tables-python/blob/main/images/image-74-2048x371.png)
 
 ### Replacing Missing Values
 
@@ -308,7 +308,7 @@ df.head()
 
 出力は次のようになります。
 
-![Top five rows](https://github.com/luminati-io/scrape-html-tables-python/blob/main/images/image-75-2048x371.png)
+![Top five rows](https://github.com/bright-jp/scrape-html-tables-python/blob/main/images/image-75-2048x371.png)
 
 ### Removing Commas and Convert Data Types
 
@@ -358,7 +358,7 @@ print(df.head(10))
 
 出力は次のようになります。
 
-![Top ten rows of the cleaned data](https://github.com/luminati-io/scrape-html-tables-python/blob/main/images/image-76-2048x665.png)
+![Top ten rows of the cleaned data](https://github.com/bright-jp/scrape-html-tables-python/blob/main/images/image-76-2048x665.png)
 
 ## Exporting Cleaned Data to CSV
 
